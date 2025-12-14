@@ -12,11 +12,32 @@ from flwr.serverapp import Grid
 from flwr.serverapp.strategy import FedAdagrad, Result
 from flwr.serverapp.strategy.strategy_utils import log_strategy_start_info
 
+import pickle
+from dataclasses import asdict
+
 PROJECT_NAME = "FLOWER-advanced-pytorch"
 
 
 class CustomFedAdagrad(FedAdagrad):
     """Custom FedAdagrad strategy with learning rate decay, W&B logging, and"""
+
+    def aggregate_train(
+        self,
+        server_round: int,
+        replies: Iterable[Message],
+    ) -> tuple[Optional[ArrayRecord], Optional[MetricRecord]]:
+        """Aggregate ArrayRecords and MetricRecords in the received Messages."""
+
+        for reply in replies:
+            if reply.has_content():
+                # Retrieve the ConfigRecord from the message
+                config_record = reply.content["train_metadata"]
+                metadata_bytes = config_record["meta"]
+                # Deserialize it
+                train_meta = pickle.loads(metadata_bytes)
+                print(asdict(train_meta))
+        # Aggregate the ArrayRecords and MetricRecords as usual
+        return super().aggregate_train(server_round, replies)
 
     # Override method to configure training with LR decay
     def configure_train(

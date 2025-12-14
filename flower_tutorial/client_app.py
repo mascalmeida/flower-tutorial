@@ -1,12 +1,16 @@
 """flower-tutorial: A Flower / PyTorch app."""
 
 import torch
-from flwr.app import ArrayRecord, Context, Message, MetricRecord, RecordDict
+from flwr.app import ArrayRecord, Context, Message, MetricRecord, RecordDict, ConfigRecord
 from flwr.clientapp import ClientApp
 
-from flower_tutorial.task import Net, load_data
+from flower_tutorial.task import Net, TrainProcessMetadata, load_data
 from flower_tutorial.task import test as test_fn
 from flower_tutorial.task import train as train_fn
+
+import time
+
+import pickle
 
 # Flower ClientApp
 app = ClientApp()
@@ -15,6 +19,8 @@ app = ClientApp()
 @app.train()
 def train(msg: Message, context: Context):
     """Train the model on local data."""
+
+    start_time = time.time()
 
     # Load the model and initialize it with the received weights
     model = Net()
@@ -36,6 +42,20 @@ def train(msg: Message, context: Context):
         device,
     )
 
+    end_time = time.time()
+    training_time = end_time - start_time
+
+    train_metadata = TrainProcessMetadata(
+        training_time=training_time,
+        converged=True,
+        training_losses={"epoch1": 0.56, "epoch2": 0.34}
+    )
+
+    # Serialize the TrainProcessMetadata object to bytes
+    train_meta_bytes = pickle.dumps(train_metadata)
+    # Construct a ConfigRecord
+    config_record = ConfigRecord({"meta": train_meta_bytes})
+
     # Construct and return reply Message
     model_record = ArrayRecord(model.state_dict())
     metrics = {
@@ -43,7 +63,13 @@ def train(msg: Message, context: Context):
         "num-examples": len(trainloader.dataset),
     }
     metric_record = MetricRecord(metrics)
-    content = RecordDict({"arrays": model_record, "metrics": metric_record})
+    content = RecordDict(
+        {
+            "arrays": model_record,
+            "metrics": metric_record,
+            "train_metadata": config_record,
+        }
+    )
     return Message(content=content, reply_to=msg)
 
 

@@ -12,6 +12,9 @@ from torchvision.transforms import Compose, Normalize, ToTensor
 from datasets import load_dataset
 from flwr.app import ArrayRecord, MetricRecord
 
+# Communicating arbitrary objects
+from dataclasses import dataclass
+
 
 class Net(nn.Module):
     """Model (simple CNN adapted from 'PyTorch: A 60 Minute Blitz')"""
@@ -132,3 +135,12 @@ def central_evaluate(server_round: int, arrays: ArrayRecord) -> MetricRecord:
 
     # Return the evaluation metrics
     return MetricRecord({"accuracy": accuracy, "loss": loss})
+
+# Communicating arbitrary objects
+@dataclass
+class TrainProcessMetadata:
+    """Metadata about the training process."""
+
+    training_time: float
+    converged: bool
+    training_losses: dict[str, float]  # e.g. { "epoch_1": 0.5, "epoch_2": 0.3 }

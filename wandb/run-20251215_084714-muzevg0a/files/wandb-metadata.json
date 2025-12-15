@@ -1,0 +1,32 @@
+{
+  "os":  "Windows-10-10.0.26200-SP0",
+  "python":  "CPython 3.10.19",
+  "startedAt":  "2025-12-15T11:47:14.398837Z",
+  "args":  [
+    "--app",
+    ".",
+    "--num-supernodes",
+    "1000"
+  ],
+  "program":  "-m __main__",
+  "git":  {
+    "remote":  "https://github.com/mascalmeida/flower-tutorial.git",
+    "commit":  "f518fbd31605dab3fdf189f44ebd0789ab8b0eb9"
+  },
+  "email":  "lucasmascalmeida@gmail.com",
+  "root":  "C:\\Users\\LucasMascarenhas\\OneDrive - Shape Digital\\Pessoal\\Doutorado\\Codes\\flower-tutorial",
+  "host":  "SHAPE-000342",
+  "executable":  "C:\\Users\\LucasMascarenhas\\miniconda3\\envs\\phd\\python.exe",
+  "cpu_count":  10,
+  "cpu_count_logical":  12,
+  "disk":  {
+    "/":  {
+      "total":  "508908531712",
+      "used":  "145928396800"
+    }
+  },
+  "memory":  {
+    "total":  "34029125632"
+  },
+  "writerId":  "l9jfcshjenvezdds3sjwq9djb7676jrx"
+}
